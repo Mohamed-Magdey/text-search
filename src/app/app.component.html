@@ -1,17 +1,19 @@
 <main class="container-fluid">
-  <h2 class="fw-bold mb-5">Search</h2>
-  <div class="input-group pt-4 mb-4">
-    <input
-      type="text"
-      class="form-control"
-      placeholder="Search for keywords"
-      [ngModel]="searchQuery()"
-      (ngModelChange)="onSearch($event)"
-    />
-    @if (searchQuery()) {
-      <div (click)="clearSearch()"
-      aria-label="Clear search">x</div>
-    }
+  <div class="row g-0">
+    <div class="col-8">
+      <h2 class="fw-bold mb-5">Search</h2>
+      <div class="input-group pt-4 mb-4">
+        <input
+          type="text"
+          class="form-control form-control-lg"
+          placeholder="Search for keywords"
+          [value]="searchQuery()"
+          (input)="onSearch($event)"
+        />
+        @if (searchQuery()) {
+          <div class="clear-search" (click)="clearSearch()">&times;</div>
+        }
+      </div>
+    </div>
   </div>
-  {{searchQuery()}}
 </main>

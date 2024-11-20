@@ -1,22 +1,22 @@
-import { Component, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [FormsModule],
+  imports: [],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
-  searchQuery = signal('');
+  searchQuery = signal<string>('');
 
-  onSearch(event: string): void {
-    console.log(event);
-    this.searchQuery.set(event);
+  onSearch(event: Event): void {
+    const input = event.target as HTMLInputElement
+    this.searchQuery.set(input.value);
   }
 
   clearSearch(): void {
-
+    this.searchQuery.set('');
   }
 }
