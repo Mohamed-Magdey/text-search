@@ -1,7 +1,7 @@
 <main class="container-fluid">
   <div class="row g-0">
     <div class="col-8">
-      <h2 class="fw-bold mb-5">Search</h2>
+      <h2 class="mb-5">Search</h2>
       <div class="input-group pt-4 mb-4">
         <input
           type="text"
@@ -14,6 +14,36 @@
           <div class="clear-search" (click)="clearSearch()">&times;</div>
         }
       </div>
+
+      @if (searchQuery()) {
+        <p>
+          @switch (filteredResults().length) {
+            @case (0) {
+              <strong>No post</strong> was
+            }
+            @case (1) {
+              <strong>1 post</strong> was
+            }
+            @default {
+              <strong>{{filteredResults().length}} posts</strong> were
+            }
+          }
+          found
+        </p>
+
+        <div class="results mt-5">
+          @for (result of filteredResults(); let index = $index; track result.id) {
+            <div>
+              <h2 class="mb-1" [innerHTML]="highlightText(result.title)"></h2>
+              <h5 class="mb-3 fst-italic">{{ result.date | date: 'mediumDate' }}</h5>
+              <p [innerHTML]="highlightText(result.content)"></p>
+            </div>
+            @if(filteredResults().length - 1 !== $index) {
+              <hr>
+            }
+          }
+        </div>
+      }
     </div>
   </div>
 </main>
