@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Signal, computed, effect, signal } from '@angular/core';
 import { Result } from './model/result.interface';
 import { data } from './data';
 import { DatePipe } from '@angular/common';
+import { debounceSignal } from './utils/signal-utilities';
 
 
 @Component({
@@ -12,24 +13,26 @@ import { DatePipe } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
-  searchQuery = signal<string>('');
+  enteredSearch = signal<string>('');
+
+  searchQuery = debounceSignal(this.enteredSearch, 300) as Signal<string>;
 
   results = signal<Result[]>(data);
 
-  filteredResults = computed<Result[]>(() => {
-    return this.results().filter(item =>
+  filteredResults = computed(() => {
+    return (this.results() && this.searchQuery()) ? this.results().filter(item =>
       item.title.toLowerCase().includes(this.searchQuery()) ||
       item.content.toLowerCase().includes(this.searchQuery())
-    )
+    ) : []
   });
 
   onSearch(event: Event): void {
     const query = event.target as HTMLInputElement
-    this.searchQuery.set(query.value.trim().toLowerCase());
+    this.enteredSearch.set(query.value.trim().toLowerCase());
   }
 
   clearSearch(): void {
-    this.searchQuery.set('');
+    this.enteredSearch.set('');
   }
 
   highlightText(text: string): string {
