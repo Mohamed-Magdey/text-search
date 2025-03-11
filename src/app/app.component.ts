@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { Result } from './model/result.interface';
 import { data } from './data';
 import { DatePipe } from '@angular/common';
 
+
 @Component({
   selector: 'app-root',
-  standalone: true,
   imports: [DatePipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -16,26 +16,20 @@ export class AppComponent {
 
   results = signal<Result[]>(data);
 
-  filteredResults = signal([...this.results()]);
+  filteredResults = computed<Result[]>(() => {
+    return this.results().filter(item =>
+      item.title.toLowerCase().includes(this.searchQuery()) ||
+      item.content.toLowerCase().includes(this.searchQuery())
+    )
+  });
 
   onSearch(event: Event): void {
     const query = event.target as HTMLInputElement
-    this.searchQuery.set(query.value.trim());
-    const searchValue = query.value.toLowerCase();
-    if (!searchValue) {
-      this.filteredResults.set([...this.results()]);
-    } else {
-      const filtered = this.results().filter(item =>
-        item.title.toLowerCase().includes(searchValue) ||
-        item.content.toLowerCase().includes(searchValue)
-      );
-      this.filteredResults.set(filtered);
-    }
+    this.searchQuery.set(query.value.trim().toLowerCase());
   }
 
   clearSearch(): void {
     this.searchQuery.set('');
-    this.filteredResults.set([...this.results()]);
   }
 
   highlightText(text: string): string {
